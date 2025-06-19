@@ -1,5 +1,10 @@
 import { dataStore } from "../utils/dataStore";
-import { Apparel, ApparelSize } from "../interfaces";
+import {
+  Apparel,
+  UpdateApparelStockResult,
+  UpdateMultipleApparelStocks,
+  UpdateMultipleApparelStocksResult,
+} from "../interfaces";
 
 export const apparelService = {
   updateApparelStock: async (
@@ -7,13 +12,25 @@ export const apparelService = {
     size: string,
     quantity: number,
     price: number
-  ): Promise<boolean> => {
-    return dataStore.updateApparel(code, size, quantity, price);
+  ): Promise<UpdateApparelStockResult> => {
+    return dataStore.updateApparelStock(code, size, quantity, price);
+  },
+
+  addOrUpdateApparel: async (
+    code: string,
+    size: string,
+    quantity: number,
+    price: number
+  ): Promise<UpdateApparelStockResult> => {
+    return dataStore.addOrUpdateApparel(code, size, quantity, price);
   },
 
   updateMultipleApparelStocks: async (
-    updates: { code: string; size: string; quantity: number; price: number }[]
-  ): Promise<boolean> => {
+    updates: UpdateMultipleApparelStocks[]
+  ): Promise<{
+    success: boolean;
+    results: Array<UpdateMultipleApparelStocksResult>;
+  }> => {
     return dataStore.updateMultipleApparels(updates);
   },
 

@@ -1,0 +1,13 @@
+{
+  "checkOrderFulfillmentIsArray": "Expected an array of order items",
+  "orderCannotBeFulfilled": "Order cannot be fulfilled",
+  "missingRequiredFields": "Missing required fields",
+  "apparelNotFound": "Apparel not found",
+  "stockUpdated": "Apparel stock updated successfully",
+  "productCodeNotFound": "This product code not found",
+  "sizeNotAvailable": "Size not available for this product",
+  "apparelCreated": "New apparel created",
+  "bulkUpdateSuccess": "All updates completed successfully",
+  "bulkUpdatePartial": "Some updates could not be completed",
+  "sizeAdded": "New size added to product"
+}

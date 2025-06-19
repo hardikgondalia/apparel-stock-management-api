@@ -1,6 +1,15 @@
 import fs from "fs";
 import path from "path";
-import { Apparel, OrderItem } from "../interfaces";
+import {
+  Apparel,
+  EnhancedFulfillmentResult,
+  ItemAvailability,
+  OrderItem,
+  UpdateApparelStockResult,
+  UpdateMultipleApparelStocks,
+  UpdateMultipleApparelStocksResult,
+} from "../interfaces";
+import { getMessage } from "./messageUtil";
 
 const DATA_FILE = path.join(__dirname, "../../apparel-stock.json");
 
@@ -25,16 +34,50 @@ export const dataStore = {
     return apparels.find((a) => a.code === code);
   },
 
-  updateApparel: (
+  updateApparelStock: (
     code: string,
     size: string,
     quantity: number,
     price: number
-  ): boolean => {
+  ): UpdateApparelStockResult => {
     const apparels = readData();
     const apparelIndex = apparels.findIndex((a) => a.code === code);
 
-    if (apparelIndex === -1) return false;
+    if (apparelIndex === -1) {
+      return { success: false, message: getMessage("apparelNotFound") };
+    }
+
+    const sizeIndex = apparels[apparelIndex].sizes.findIndex(
+      (s) => s.size === size
+    );
+
+    if (sizeIndex === -1) {
+      return { success: false, message: getMessage("sizeNotAvailable") };
+    }
+
+    apparels[apparelIndex].sizes[sizeIndex] = { size, quantity, price };
+    writeData(apparels);
+
+    return { success: true, message: getMessage("stockUpdated") };
+  },
+
+  addOrUpdateApparel: (
+    code: string,
+    size: string,
+    quantity: number,
+    price: number
+  ): UpdateApparelStockResult => {
+    const apparels = readData();
+    const apparelIndex = apparels.findIndex((a) => a.code === code);
+
+    if (apparelIndex === -1) {
+      apparels.push({
+        code,
+        sizes: [{ size, quantity, price }],
+      });
+      writeData(apparels);
+      return { success: true, message: "apparelCreated" };
+    }
 
     const sizeIndex = apparels[apparelIndex].sizes.findIndex(
       (s) => s.size === size
@@ -47,20 +90,29 @@ export const dataStore = {
     }
 
     writeData(apparels);
-    return true;
+    return { success: true, message: getMessage("stockUpdated") };
   },
 
   updateMultipleApparels: (
-    updates: { code: string; size: string; quantity: number; price: number }[]
-  ): boolean => {
+    updates: UpdateMultipleApparelStocks[]
+  ): {
+    success: boolean;
+    results: Array<UpdateMultipleApparelStocksResult>;
+  } => {
     const apparels = readData();
-    let allUpdated = true;
+    const results: Array<UpdateMultipleApparelStocksResult> = [];
+    let anySuccess = false;
 
     updates.forEach((update) => {
       const apparelIndex = apparels.findIndex((a) => a.code === update.code);
 
       if (apparelIndex === -1) {
-        allUpdated = false;
+        results.push({
+          code: update.code,
+          size: update.size,
+          success: false,
+          message: getMessage("apparelNotFound"),
+        });
         return;
       }
 
@@ -74,32 +126,63 @@ export const dataStore = {
           quantity: update.quantity,
           price: update.price,
         });
+        anySuccess = true;
+        results.push({
+          code: update.code,
+          size: update.size,
+          success: true,
+          message: getMessage("sizeAdded"),
+        });
       } else {
         apparels[apparelIndex].sizes[sizeIndex] = {
           size: update.size,
           quantity: update.quantity,
           price: update.price,
         };
+        anySuccess = true;
+        results.push({
+          code: update.code,
+          size: update.size,
+          success: true,
+          message: getMessage("stockUpdated"),
+        });
       }
     });
 
-    if (allUpdated) {
+    if (anySuccess) {
       writeData(apparels);
     }
 
-    return allUpdated;
+    return {
+      success: anySuccess,
+      results,
+    };
   },
 
-  canFulfillOrder: (orderItems: OrderItem[]): boolean => {
+  canFulfillOrder: (orderItems: OrderItem[]): EnhancedFulfillmentResult => {
     const apparels = readData();
+    let canFulfill = true;
+    const unfulfilledItems: ItemAvailability[] = [];
 
-    return orderItems.every((item) => {
+    orderItems.forEach((item) => {
       const apparel = apparels.find((a) => a.code === item.code);
-      if (!apparel) return false;
+      if (!apparel) {
+        canFulfill = false;
+        unfulfilledItems.push({ item, available: 0 });
+        return;
+      }
 
       const size = apparel.sizes.find((s) => s.size === item.size);
-      return size && size.quantity >= item.quantity;
+      if (!size || size.quantity < item.quantity) {
+        canFulfill = false;
+        unfulfilledItems.push({
+          item,
+          available: size ? size.quantity : 0,
+        });
+      }
     });
+
+    return { canFulfill, unfulfilledItems };
   },
 
   getLowestOrderCost: (orderItems: OrderItem[]): number | null => {

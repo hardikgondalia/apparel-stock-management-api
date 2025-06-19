@@ -1,8 +1,10 @@
 import { dataStore } from "../utils/dataStore";
-import { OrderItem } from "../interfaces";
+import { EnhancedFulfillmentResult, OrderItem } from "../interfaces";
 
 export const orderService = {
-  checkOrderFulfillment: async (items: OrderItem[]): Promise<boolean> => {
+  checkOrderFulfillment: async (
+    items: OrderItem[]
+  ): Promise<EnhancedFulfillmentResult> => {
     return dataStore.canFulfillOrder(items);
   },
 
