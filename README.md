@@ -22,3 +22,6 @@ As a user, I should be able to know the lowest cost at which I can get the order
 
 Postman collection is also attached with source code for reference
 
+## How to run test cases
+Run `npm test` to run unit test cases
+
