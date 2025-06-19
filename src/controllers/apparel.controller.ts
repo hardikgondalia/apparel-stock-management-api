@@ -10,7 +10,7 @@ export const apparelController = {
 
       if (!size || quantity === undefined || price === undefined) {
         return res.status(400).json({
-          message: getMessage("missingRequiredFields"),
+          message: "missingRequiredFields",
         });
       }
 
