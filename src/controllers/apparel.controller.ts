@@ -26,7 +26,7 @@ export const apparelController = {
       }
 
       return res.status(404).json({
-        message: getMessage(message),
+        message: message,
         details:
           message === getMessage("sizeNotAvailable")
             ? `Size ${size} not available for product ${code}`
@@ -84,7 +84,7 @@ export const apparelController = {
       const detailedResults = results.map((result) => ({
         code: result.code,
         size: result.size,
-        message: result.message ? getMessage(result.message) : undefined,
+        message: result.message ? result.message : undefined,
         details: result.success
           ? `Stock for ${result.code} size ${result.size} updated`
           : result.message === "apparelNotFound"

@@ -58,7 +58,7 @@ export const dataStore = {
     apparels[apparelIndex].sizes[sizeIndex] = { size, quantity, price };
     writeData(apparels);
 
-    return { success: true, message: getMessage("stockUpdated") };
+    return { success: true, message: "stockUpdated" };
   },
 
   addOrUpdateApparel: (
