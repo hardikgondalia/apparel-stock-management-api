@@ -1,0 +1,57 @@
+[
+  {
+    "code": "APL001",
+    "sizes": [
+      {
+        "size": "M",
+        "quantity": 100,
+        "price": 80
+      },
+      {
+        "size": "L",
+        "quantity": 100,
+        "price": 69.99
+      },
+      {
+        "size": "S",
+        "quantity": 50,
+        "price": 20
+      },
+      {
+        "size": "xs",
+        "quantity": 15,
+        "price": 69.99
+      },
+      {
+        "size": "XL",
+        "quantity": 5,
+        "price": 34.99
+      }
+    ]
+  },
+  {
+    "code": "APL002",
+    "sizes": [
+      {
+        "size": "L",
+        "quantity": 5,
+        "price": 39.99
+      },
+      {
+        "size": "M",
+        "quantity": 70,
+        "price": 35
+      },
+      {
+        "size": "S",
+        "quantity": 100,
+        "price": 80
+      },
+      {
+        "size": "XL",
+        "quantity": 70,
+        "price": 40
+      }
+    ]
+  }
+]
